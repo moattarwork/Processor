@@ -20,6 +20,8 @@ import argparse
 import sys
 import logging
 
+import excel
+
 from processor import __version__
 
 __author__ = "moattarwork"
@@ -29,7 +31,7 @@ __license__ = "mit"
 _logger = logging.getLogger(__name__)
 
 
-def fib(n):
+def process_file(n):
     """Fibonacci example function
 
     Args:
@@ -55,16 +57,16 @@ def parse_args(args):
       :obj:`argparse.Namespace`: command line parameters namespace
     """
     parser = argparse.ArgumentParser(
-        description="Just a Fibonnaci demonstration")
+        description="input excel file to process")
     parser.add_argument(
         '--version',
         action='version',
         version='Processor {ver}'.format(ver=__version__))
     parser.add_argument(
-        dest="n",
-        help="n-th Fibonacci number",
-        type=int,
-        metavar="INT")
+        dest="input_file",
+        help="input excel(.xlsx) file to process",
+        default='sample.xlsx',
+        metavar="STR")
     parser.add_argument(
         '-v',
         '--verbose',
@@ -101,8 +103,12 @@ def main(args):
     """
     args = parse_args(args)
     setup_logging(args.loglevel)
+
     _logger.debug("Starting crazy calculations...")
-    print("The {}-th Fibonacci number is {}".format(args.n, fib(args.n)))
+
+    sheets = excel.load_file(args.input_file)
+    excel.store_as_file(args.input_file, sheets, "output")
+
     _logger.info("Script ends here")
 
 
@@ -110,7 +116,6 @@ def run():
     """Entry point for console_scripts
     """
     main(sys.argv[1:])
-
 
 if __name__ == "__main__":
     run()
